@@ -1,0 +1,2 @@
+1.need to create an empty directory 'data'
+2.import kivy and mysql-connector-python
