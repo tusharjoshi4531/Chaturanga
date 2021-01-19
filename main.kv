@@ -1,0 +1,362 @@
+
+#........MenuScreen................
+
+<MenuScreen>:
+    id: menu_screen
+
+    #Background color
+    canvas.before:
+
+        Color:
+            rgba: app.bg_color
+
+        Rectangle:
+            size: app._size
+            pos: 0, 0
+
+    #GUI
+    BoxLayout:
+        orientation: 'vertical'
+        size_hint: None, None
+        size: app._size
+
+        Label:
+            font_size: 150
+            text: 'Chaturanga'
+
+        BoxLayout:
+            orientation: 'vertical'
+            padding: 100
+            spacing: 100
+            size_hint_x: 0.5
+            pos_hint: {'center_x': 0.5}
+
+            Button:
+                text: 'Play'
+                on_press: app.sm.current = 'game'
+
+            Button:
+                text: 'Load'
+                on_press: app.sm.current = 'load'
+
+#........GameScreen................
+
+<GameScreen>:
+    id: game_screen
+    name: 'game'
+
+    #Background color
+    canvas.before:
+
+        Color:
+            rgba: app.bg_color
+
+        Rectangle:
+            size: app._size
+            pos: 0, 0
+
+    #GUI
+    RelativeLayout:
+
+        BoardTexture:
+            id: game_board_texture
+
+        Board:
+            id: game_board
+
+            #Properties defined in python
+            pallete: game_move_palette
+            is_playing: True
+            pos: game_board_texture.true_board_pos
+            square_side_length: game_board_texture.square_side_length
+
+        BoxLayout:
+
+            orientation: 'vertical'
+            size_hint: None, None
+
+            #Putting Buttons and TextInput next to the board
+            size: app._size[0] - app._size[1], app._size[1]
+            pos: app._size[1], 0
+
+            padding: 50
+            spacing: 50
+
+            TextInput:
+                id: game_move_palette
+
+            Button:
+                size_hint_y: 0.25
+                text: 'Back'
+                on_press: app.sm.current = 'menu'
+
+            Button:
+                size_hint_y: 0.25
+                text: 'Save'
+                on_press: game_screen.save()
+
+            BoxLayout:
+                size_hint_y: 0.25
+                spacing: 50
+
+                Button:
+                    text: 'Resign'
+                    on_press: game_board.resign()
+
+                Button:
+                    text: 'Draw'
+                    on_press: game_board.draw()
+
+<PromotionPopup>:
+    title: 'Promotion'
+    size_hint: 0.5, 0.5
+
+    BoxLayout:
+        Button:
+            text: 'queen'
+            on_press:
+                app.sm.get_screen('game').ids.game_board.promote(root.promoting_square, 'queen', root.promotion_piece_color)
+                root.dismiss()
+
+        Button:
+            text: 'rook'
+            on_press:
+                app.sm.get_screen('game').ids.game_board.promote(root.promoting_square, 'rook', root.promotion_piece_color)
+                root.dismiss()
+
+        Button:
+            text: 'bishop'
+            on_press:
+                app.sm.get_screen('game').ids.game_board.promote(root.promoting_square, 'bishop', root.promotion_piece_color)
+                root.dismiss()
+
+        Button:
+            text: 'knight'
+            on_press:
+                app.sm.get_screen('game').ids.game_board.promote(root.promoting_square, 'knight', root.promotion_piece_color)
+                root.dismiss()
+
+#........LoadScreen................
+
+<LoadScreen>:
+    id: load_screen
+    name: 'load'
+
+    #Background color
+    canvas.before:
+
+        Color:
+            rgba: app.bg_color
+
+        Rectangle:
+            size: app._size
+            pos: 0, 0
+
+    #GUI
+    RelativeLayout:
+
+        BoardTexture:
+            id: load_board_texture
+
+        Board:
+            id: load_board
+
+            #Properties defined in python
+            is_playing: False
+            pallete: load_info_palette
+            pos: load_board_texture.true_board_pos
+            square_side_length: load_board_texture.square_side_length
+
+        BoxLayout:
+
+            orientation: 'vertical'
+            size_hint: None, None
+
+            #Putting Buttons and TextInput next to the board
+            size: app._size[0] - app._size[1], app._size[1]
+            pos: app._size[1], 0
+
+            padding: 50
+            spacing: 50
+
+            TextInput:
+                id: load_info_palette
+
+            Button:
+                size_hint_y: 0.25
+                text: 'Back'
+                on_press: app.sm.current = 'menu'
+
+            Button:
+                size_hint_y: 0.25
+                text: 'Load / Delete'
+                on_press: load_screen.load()
+
+            BoxLayout:
+                size_hint_y: 0.25
+                spacing: 50
+
+                Button:
+                    text: 'Previous'
+                    on_press: load_board.change_position(-1)
+
+                Button:
+                    text: 'Next'
+                    on_press: load_board.change_position(1)
+
+#........LoadPopups................
+
+<LoadPasswdPopup>:
+    title: 'Password'
+    size_hint: 0.3, 0.3
+
+    BoxLayout:
+        spacing: 20
+        orientation: 'vertical'
+
+        TextInput:
+            id: input
+
+        BoxLayout:
+            spacing: 10
+            Button:
+                text: 'Confirm'
+                on_press: root.on_confirm()
+
+            Button:
+                text: 'Cancel'
+                on_press: root.dismiss()
+
+<LoadChooseTablePopup>:
+    title: 'Load'
+    size_hint: 0.5, 0.3
+
+    BoxLayout:
+        orientation: 'vertical'
+        spacing: 20
+
+        DropDownMenu:
+            id: table
+            text: 'Choose Table....'
+            contents: root.tables
+
+        BoxLayout:
+            spacing: 10
+            Button:
+                text: 'load'
+                on_press: root.on_load()
+
+            Button:
+                text: 'delete'
+                on_press: root.on_delete()
+
+            Button:
+                text: 'Cancel'
+                on_press: root.dismiss()
+
+<LoadChooseGamePopup>:
+    title: 'Load'
+    size_hint: 0.5, 0.3
+
+    BoxLayout:
+        orientation: 'vertical'
+        spacing: 20
+
+        DropDownMenu:
+            id: game
+            text: 'Choose Game....'
+            contents: root.games
+
+        BoxLayout:
+            spacing: 10
+            Button:
+                text: 'load'
+                on_press: root.on_load()
+
+            Button:
+                text: 'delete'
+                on_press: root.on_delete()
+
+            Button:
+                text: 'Cancel'
+                on_press: root.dismiss()
+
+#........SavePopups................
+
+<SavePasswdPopup>:
+    title: 'Password'
+    size_hint: 0.3, 0.3
+
+    BoxLayout:
+        spacing: 20
+        orientation: 'vertical'
+
+        TextInput:
+            id: input
+
+        BoxLayout:
+            spacing: 10
+            Button:
+                text: 'Confirm'
+                on_press: root.on_confirm()
+
+            Button:
+                text: 'Cancel'
+                on_press: root.dismiss()
+
+<SavePopup>:
+    title: 'Save'
+    size_hint: 0.5, 0.5
+
+    BoxLayout:
+        spacing: 20
+        orientation: 'vertical'
+
+        TextInput:
+            id: input
+
+        DropDownMenu:
+            id: table
+            text: 'Choose Table....'
+            contents: root.tables
+
+        Button:
+            text:'Add Table'
+            on_press: root.on_add_table()
+
+        BoxLayout:
+            spacing: 10
+            Button:
+                text: 'save'
+                on_press: root.on_save()
+
+            Button:
+                text: 'Cancel'
+                on_press: root.dismiss()
+
+<AddTablePopup>:
+    title: 'Add Table'
+    size_hint: 0.3, 0.3
+
+    BoxLayout:
+        spacing: 20
+        orientation: 'vertical'
+
+        TextInput:
+            id: input
+
+        BoxLayout:
+            spacing: 10
+            Button:
+                text: 'add'
+                on_press: root.on_add()
+
+            Button:
+                text: 'Cancel'
+                on_press: root.dismiss()
+
+
+
+
+
+
